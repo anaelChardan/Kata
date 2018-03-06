@@ -1,3 +1,7 @@
+package com.fruit_shop.kata
+
+import com.fruit_shop.kata.cashier_machine.CashierMachine
+
 object Main extends App {
   override def main(args: Array[String]): Unit = {
     var cashierMachine = new CashierMachine()
