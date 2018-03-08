@@ -4,5 +4,5 @@ import com.fruit_shop.kata.cashier_machine.Basket
 import com.fruit_shop.kata.fruits.Apple
 
 class ApplesOffer extends Offer {
-  override def offer(basket: Basket): Int = basket.getFruitPerType(new Apple()).size / 2 * 100
+  override def offer(basket: Basket): Int = basket.getFruitPerType[Apple].size / 2 * 100
 }

@@ -5,9 +5,9 @@ import com.fruit_shop.kata.internationalization.English
 
 class ThreeLotsOfAppleOffer extends Offer {
   override def offer(basket: Basket): Int = {
-    val englishApples = basket.getFruitPerLanguageAndType(new English(), new Apple())
+    val englishApples = basket.getFruitPerLanguageAndType[Apple](new English())
 
-    if (englishApples.size < 3) {
+    if (englishApples.lengthCompare(3) < 0) {
       return 0
     }
 

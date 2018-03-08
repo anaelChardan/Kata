@@ -1,29 +1,24 @@
 package com.fruit_shop.kata.cashier_machine
 
-import com.fruit_shop.kata.fruits.{Apple, Banana, Cherry, Fruit}
+import com.fruit_shop.kata.fruits.Fruit
 import com.fruit_shop.kata.internationalization.Language
 
-class Basket(basket: Map[Language, List[Fruit]]) {
-  def add(language: Language, fruit: Fruit): Basket = {
-      new Basket(basket + (language -> (fruit :: getFruitPerLanguage(language))))
+abstract class Entry[+F](language: Language, entry: F)(implicit ma: Manifest[F]){
+  val entryType: Class[_] = ma.runtimeClass
+  def isEqual(classType: Class[_], language: Language): Boolean = classType == entryType && language == this.language
+}
+
+case class BasketEntry(language: Language, fruit: Fruit) extends Entry[Fruit](language, fruit) {}
+
+case class Basket(basket: List[BasketEntry]) {
+  def add[F <: Fruit](language: Language, fruit: F)(implicit ma: Manifest[F]): Basket = Basket(BasketEntry(language, fruit) :: basket)
+
+  def getFruits: List[Fruit] = basket.map(_.fruit)
+
+  def getFruitPerLanguage(language: Language): List[Fruit] = basket.filter(_.language == language).map(_.fruit)
+  def getFruitPerType[F <: Fruit](implicit ma: Manifest[F]): List[Fruit] = basket.filter(_.entryType == ma.runtimeClass).map(_.fruit)
+
+  def getFruitPerLanguageAndType[F <: Fruit](language: Language)(implicit ma:Manifest[F]): List[Fruit] = {
+    basket.filter(_.isEqual(ma.runtimeClass, language)).map(_.fruit)
   }
-
-  def getFruitPerLanguage(language: Language): List[Fruit] = {
-    basket.getOrElse(language, List.empty)
-  }
-
-  def getFruitPerLanguageAndType(language: Language, fruit: Fruit): List[Fruit] = {
-    getFruitPerType(fruit, getFruitPerLanguage(language))
-  }
-
-  def getFruitPerType(fruit: Fruit, fruitList: List[Fruit] = basket.flatMap(_._2).toList): List[Fruit] = {
-    fruit match {
-      case Apple() => fruitList.collect { case p:Apple => p }
-      case Cherry() => fruitList.collect { case c:Cherry => c}
-      case Banana() => fruitList.collect { case b:Banana => b}
-    }
-  }
-
-  def getFruits: List[Fruit] = basket.flatMap(_._2).toList
-
 }
